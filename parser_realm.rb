@@ -74,10 +74,16 @@ end
 
 get '/*' do
   rows = []
+  failed_urls = {}
   ALL_DESIRED.each do |id|
-    page = RestClient.get('http://www.realmeye.com/offers-to/sell/'+id.to_s)
-    trade_table_json = page.match(/renderOffersTable\("[^"]*",(\[[^)]*?)\)/)[1]
-    rows+= JSON.parse(trade_table_json)
+    url = 'http://www.realmeye.com/offers-to/sell/'+id.to_s
+    begin
+      page = RestClient.get(url)
+      trade_table_json = page.match(/renderOffersTable\("[^"]*",(\[[^)]*?)\)/)[1]
+      rows+= JSON.parse(trade_table_json)
+    rescue RestClient::RequestFailed
+      failed_urls[url] = $!.to_s
+    end
   end
   preamble = "<html>
 <head>
@@ -99,6 +105,10 @@ table {
 <table style='border-top: 1; border-right: 1'>
 <thead><th>slingin</th><th>cravin</th><th>brobocop</th><th>thrown up</th><th>last spotted</th></thead>
 <tbody>"
+  error_content = []
+  failed_urls.each do |url,error|
+    error_content << "<tr><td colspan=5><a href='#{url}'>#{url}</a> failed with #{error.to_s.inspect}</td></tr>"
+  end
   content = rows.sort_by{|row| sort_value(row) }.reverse.map do |row_data|
     sell_quantities = row_data[1]
     sell_descriptions = []
@@ -124,5 +134,5 @@ table {
 
   #binding.pry
 
-  preamble+content.join+postamble
+  preamble+error_content.join+content.join+postamble
 end
