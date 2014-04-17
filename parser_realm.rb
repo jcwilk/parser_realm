@@ -5,26 +5,65 @@ require 'rest-client'
 require 'json'
 require 'time'
 
-ID_MAP = {
-  2592 => 'def',
-  2591 => 'att',
-  2593 => 'spd',
-  2636 => 'dex',
-  2613 => 'wis',
-  2612 => 'vit',
-  2794 => 'mana',
-  2793 => 'life'
+POT_MAP = {
+  2592 => 'Def',
+  2591 => 'Att',
+  2593 => 'Spd',
+  2636 => 'Dex',
+  2613 => 'Wis',
+  2612 => 'Vit',
+  2794 => 'Mana',
+  2793 => 'Life'
+}
+
+TREASURE_MAP = {
+  3184 => "Ankh (400)",
+  3185 => "Eye (550)",
+  3186 => "Mask (700)",
+  3187 => "Cockle (450)",
+  3188 => "Conch (550)",
+  3189 => "Horn (650)",
+  3190 => "Nut (450)",
+  3191 => "Bolt (550)",
+  3192 => "Femur (450)",
+  3193 => "Ribcage (500)",
+  3194 => "Skull (650)",
+  3195 => "Candelabra (650)",
+  3196 => "Cross (600)",
+  3197 => "Necklace (400)",
+  3198 => "Chalice (500)",
+  3199 => "Ruby (600)"
+}
+
+FP_MAP = {
+  -103 => "(400)",
+  -104 => "(450)",
+  -105 => "(500)",
+  -106 => "(550)",
+  -107 => "(600)",
+  -108 => "(650)"
 }
 
 FP_400_PLUS = (-108...-103).to_a
-TREASURES = (3184...3199).to_a
+TREASURES = TREASURE_MAP.keys
 ALL_DESIRED = FP_400_PLUS+TREASURES
 
-def map_if_exist(id)
-  return ID_MAP[id] if ID_MAP[id]
-  return "treasure"+id.to_s if TREASURES.include?(id)
-  return "fp"+id.to_s if FP_400_PLUS.include?(id)
-  id
+def map_if_exist(id, quantity)
+  name = if POT_MAP[id]
+      POT_MAP[id]
+    elsif TREASURE_MAP[id]
+      TREASURE_MAP[id]
+    elsif FP_MAP[id]
+      FP_MAP[id]
+    else
+      'misc'
+    end
+
+  if quantity == 1
+    return name
+  else
+    return "#{quantity} #{name}"
+  end
 end
 
 get '/*' do
@@ -51,14 +90,14 @@ td {
     sell_descriptions = []
 
     row_data[0].each_with_index do |item,i|
-      sell_descriptions << sell_quantities[i].to_s+"x"+map_if_exist(item).to_s
+      sell_descriptions << map_if_exist(item, sell_quantities[i])
     end
 
     buy_quantities = row_data[3]
     buy_descriptions = []
 
     row_data[2].each_with_index do |item,i|
-      buy_descriptions << buy_quantities[i].to_s+"x"+map_if_exist(item).to_s
+      buy_descriptions << map_if_exist(item, buy_quantities[i])
     end
 
     added = (Time.parse(row_data[6]).to_s rescue nil)
