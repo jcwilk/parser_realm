@@ -69,11 +69,7 @@ def map_if_exist(id, quantity)
       'misc'
     end
 
-  if quantity == 1
-    return name
-  else
-    return "#{quantity}x #{name}"
-  end
+  return "#{quantity}x #{name}"
 end
 
 get '/*' do
