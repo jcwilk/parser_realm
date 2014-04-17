@@ -80,7 +80,15 @@ td {
   border-right: 1px solid black;
   border-top: 1px solid black;
 }
+
+html, body {
+    width: 100%;
+}
+table {
+    margin: 0 auto;
+}
 </style>
+</head>
 <body>
 <table style='border-top: 1; border-right: 1'>
 <thead><th>slingin</th><th>cravin</th><th>brobocop</th><th>thrown up</th><th>last spotted</th></thead>
