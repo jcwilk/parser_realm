@@ -1,9 +1,13 @@
+require 'action_view'
 require 'sinatra'
 require 'pry'
 require 'open-uri'
 require 'rest-client'
 require 'json'
 require 'time'
+
+
+include ActionView::Helpers::DateHelper
 
 POT_MAP = {
   2592 => 'Def',
@@ -47,6 +51,12 @@ FP_MAP = {
 FP_400_PLUS = (-108...-103).to_a
 TREASURES = TREASURE_MAP.keys
 ALL_DESIRED = FP_400_PLUS+TREASURES
+
+def sort_value(row)
+  first = (Time.parse(row[7]).to_s rescue '00000')
+  second = (Time.parse(row[6]).to_s rescue '00000')
+  first+'|'+second
+end
 
 def map_if_exist(id, quantity)
   name = if POT_MAP[id]
@@ -93,7 +103,7 @@ table {
 <table style='border-top: 1; border-right: 1'>
 <thead><th>slingin</th><th>cravin</th><th>brobocop</th><th>thrown up</th><th>last spotted</th></thead>
 <tbody>"
-  content = rows.map do |row_data|
+  content = rows.sort_by{|row| sort_value(row) }.reverse.map do |row_data|
     sell_quantities = row_data[1]
     sell_descriptions = []
 
@@ -108,8 +118,8 @@ table {
       buy_descriptions << map_if_exist(item, buy_quantities[i])
     end
 
-    added = (Time.parse(row_data[6]).to_s rescue nil)
-    last_seen = (Time.parse(row_data[7]).to_s rescue nil)
+    added = (distance_of_time_in_words(Time.now,Time.parse(row_data[6])) rescue nil)
+    last_seen = (distance_of_time_in_words(Time.now,Time.parse(row_data[7])) rescue nil)
 
     "<tr><td>"+sell_descriptions.join('</br>')+"</td><td>"+buy_descriptions.join('</br>')+"</td><td><a href='http://www.realmeye.com/offers-by/"+row_data[5]+"'>"+row_data[5]+"</a></td><td>"+added.to_s+"</td><td>"+last_seen.to_s+"</td></tr>"
   end
