@@ -16,14 +16,14 @@ ID_MAP = {
   2793 => 'life'
 }
 
-FP_400_PLUS = (-103...-108).to_a
+FP_400_PLUS = (-108...-103).to_a
 TREASURES = (3184...3199).to_a
 ALL_DESIRED = FP_400_PLUS+TREASURES
 
 def map_if_exist(id)
   return ID_MAP[id] if ID_MAP[id]
-  return id.to_s+"treasure" if TREASURES.include?(id)
-  return id.to_s+"fp" if FP_400_PLUS.include?(id)
+  return "treasure"+id.to_s if TREASURES.include?(id)
+  return "fp"+id.to_s if FP_400_PLUS.include?(id)
   id
 end
 
