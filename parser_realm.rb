@@ -72,7 +72,7 @@ def map_if_exist(id, quantity)
   if quantity == 1
     return name
   else
-    return "#{quantity} #{name}"
+    return "#{quantity}x #{name}"
   end
 end
 
