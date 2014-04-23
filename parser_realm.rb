@@ -32,8 +32,8 @@ TREASURE_MAP = {
   3192 => "Femur (450)",
   3193 => "Ribcage (500)",
   3194 => "Skull (650)",
-  3195 => "Candelabra (650)",
-  3196 => "Cross (600)",
+  3195 => "Candelabra (450)",
+  3196 => "Cross (500)",
   3197 => "Necklace (400)",
   3198 => "Chalice (500)",
   3199 => "Ruby (600)"
@@ -48,9 +48,9 @@ FP_MAP = {
   -108 => "(650)"
 }
 
-FP_400_PLUS = (-108...-103).to_a
-TREASURES = TREASURE_MAP.keys
-ALL_DESIRED = FP_400_PLUS+TREASURES
+FP_600_PLUS = [-107,-108]
+TREASURES_600_PLUS = [3186,3189,3194,3199]
+ALL_DESIRED = FP_600_PLUS+TREASURES_600_PLUS
 
 def sort_value(row)
   first = (Time.parse(row[7]).to_s rescue '00000')
